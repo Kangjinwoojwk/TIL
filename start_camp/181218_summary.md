@@ -7,7 +7,6 @@
 - python v3.6.7
   - 개발언어
 - git
-  - 
 - VS code
   - 실제 코디용
 - chrome
