@@ -24,21 +24,20 @@ bonus_number = lotto_data['bnusNo']
 #my_numbers, real_numbers, bonus_number
 
 cnt=len(set(my_numbers)&set(real_numbers))
+pri={
+    6:'1 등',
+    7:'2 등',
+    5:'3 등',
+    4:'4 등',
+    3:'5 등',
+    2:'꽝',
+    1:'꽝',
+    0:'꽝'
+}
 if cnt==5:
     if bonus_number in my_numbers:
         cnt+=2
-if cnt==6 : 
-    print("1등")
-elif cnt==7 :
-    print("2등")
-elif cnt==5 :
-    print("3등")
-elif cnt==4 :
-    print("4등")
-elif cnt==3 :
-    print("5등")
-else:
-    print("꽝")
+print(pri[cnt])
 #1등 :my_numbers==real_numbers
 #2등 :5개+보너스
 #3등 :real&my 5개 같다
