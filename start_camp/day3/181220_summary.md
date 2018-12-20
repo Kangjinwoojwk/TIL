@@ -170,7 +170,24 @@ from math_functions import average, cube
 
 * 정말 간단하게 API를 쓸 수 있게 하는 것
 
+* C9에서 pip3 install flask쓰면 거절당해. sudo pip3 install flask 로 해야 한다. 슈퍼유저두, 최고 관리자 권한, 강력하지만 위험
 
+  ```python
+  from flask import Flask
+  
+  app = Flask(__name__) #이건 일단 늘 있어야 한다. 대문자로 시작하는건 클라스
+  @app.route("/")#기본주소가 들어가 있는 것이다.
+  def index():  #인덱스 화면에 나오는 말
+      return "Happy Hacking"
+  ```
+
+
+* flask run으로 구동
+* 프레임워크:코드는 이미 다 준비, 다만 숨겨져 있다.
+* 서버 켜져 있으면 수정상황 반영 불가 어떻게 해결?
+  * export FLASK_ENV=development   입력
+* 스트링을 주면 API다, 딕셔너리는 못보여줘, JSON써야 한다. JSON에 맞춰 주기만 하면 된다.
+* flask run -h 0.0.0.0 -p 8080     #플라스크 실행시키는 것
 
 
 
@@ -179,3 +196,11 @@ from math_functions import average, cube
 ## 4.내일
 
 * 텔레그램, 오토 챗봇, 하는건 할 수 있다. 재밌다곤 안했다. 힘들 것, 각오해라...
+
+```python
+@app.route("/send_message")
+def send_message():
+    telgram.send('msg')
+    return telgram   #대략적으로 이런 형식으로 챗봇이 만들어진다
+```
+
