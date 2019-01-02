@@ -8,7 +8,7 @@
   - 개발언어
 - git
 - VS code
-  - 실제 코디용
+  - 실제 코디용  
 - chrome
   - 인터넷 검색용
 - typora
