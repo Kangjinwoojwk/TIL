@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            margin:0;
+        }
+        div{
+            float:left;
+            width:32%;
+            height:200px;
+            background-color: indianred;
+
+            color:white;
+            font-size:3em;
+            line-height: 200px;
+            text-align:center
+        }
+        div:not(:nth-of-type(3n+1)){
+            /* 왼쪽에 틈을 내면서 내가 밀림 */
+            margin-left:2%;
+        }
+        /* 4,5,6이 아닌애들 */
+        div:not(:nth-of-type(n+4)){
+            margin-bottom:2%;
+        }
+    </style>
+</head>
+<body>
+    <div>1</div>
+    <div>2</div>
+    <div>3</div>
+    <div>4</div>
+    <div>5</div>
+    <div>6</div>
+</body>
+</html>

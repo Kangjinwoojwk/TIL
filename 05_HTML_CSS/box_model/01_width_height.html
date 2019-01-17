@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        div.control {
+            /* 가로를 우선시 한다. 콘텐츠가 넘치면 세로로 흘러넘친다. */
+            width: 300px;
+            height: 100px;
+            background-color: cornsilk;
+            border: 5px solid navy;
+            /* 이 처리를 하면 범위 넘어가는건 숨긴다. */
+            overflow: hidden
+        }
+        div.box1{
+            background-color: orange;
+            width: 100px;
+            height: 50px;
+            border: 5px solid red;
+            margin-top: 20px;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            margin-left: 100px;
+            /* 시계방향, 상우하좌 */
+            padding: 10px 20px 30px 40px;
+        }
+        div.center{
+            border:5px solid navy;
+            background-color: crimson;
+            /* 화면 줄어 들면 줄어든다. */
+            max-width: 600px;
+            /* 가로만 기준으로 가운데를 맞춰준다. max-width없으면 의미 없다 */
+            margin:auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="control">
+        But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure. To take a trivial example, which of us ever undertakes laborious physical exercise, except to obtain some advantage from it? But who has any right to find fault with a man who chooses to enjoy a pleasure that has no annoying consequences, or one who avoids a pain that produces no resultant pleasure?
+    </div>
+    <div class="box1">
+        This is div
+    </div>
+    <div class="center">
+        But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure. To take a trivial example, which of us ever undertakes laborious physical exercise, except to obtain some advantage from it? But who has any right to find fault with a man who chooses to enjoy a pleasure that has no annoying consequences, or one who avoids a pain that produces no resultant pleasure?
+    </div>
+</body>
+</html>

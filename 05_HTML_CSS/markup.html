@@ -1,0 +1,213 @@
+<!DOCTYPE html><!--소문자 등 상관없다-->
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8">
+        <title>Learn HTML</title>
+        <!--하나씩 넣는건 최악이지만 한번 넣은 이건 괜찮아-->
+        <style>
+            table,td,td{
+                border: 1px solid darkgray
+            }
+        </style>
+    </head>
+
+    <body>
+        <h1>프로그래밍 교육</h1>
+        <h1>Comming Soon..</h1>
+            <img src="animals/Irish_wolf_hound.jpg" alt="Irish wolf hound"/><!--atribute값 들 띄어쓰되, =앞뒤 뛰지 않는다. "를 쓴다-->
+
+            <ul><!--부모자식관계, 씨블링 관계 생각-->
+                <li>HTML</li>
+                <li>CSS</li>
+         </ul>
+
+          <p>
+              <i>This</i> <em>is</em> <b>SSAFY</b> <strong>1st</strong><!--b는 볼드체, strong은 강조하고 싶다. 역할로 하자!i랑 em도 같은 식-->
+           </p>
+
+         <blockquote><!--인용구 의미-->
+             Real Aritst Ship
+         </blockquote>
+
+
+
+
+
+
+
+
+
+
+
+
+        <a href="https://ko.wikipedia.org/wiki/%ED%8C%8C%EC%9D%B4%EC%8D%AC" target="_blank">
+            <img src="./images/python.jpg" alt="python" width="50px"heigh="50px">
+        </a>
+        <a href="https://ko.wikipedia.org/wiki/HTML" target="_blank">
+            <img src="./images/html5.png" alt="html" width="50px"heigh="50px">
+        </a>
+        <hr><!--이것도 셀프 클로징<hr/>가능, 밑에 라인 생긴다.-->
+        <section>
+            <h2>
+                <a href="https://docs.python.org" target="_blank">
+                    Python                
+                </a>
+            </h2>
+            <h3>Number Type</h3>
+            <p>파이썬에서 숫자형은 아래와 같다</p>
+            <ol>
+                <li>int</li>
+                <li>float</li>
+                <li>complex</li>
+                <li>str</li>
+            </ol>
+            <h3>Sequence</h3>
+            <p>파이썬에서 시퀀스는 아래와 같다.</p>
+            <strong>시퀀스는 for 문을 돌릴 수 있다!</strong>
+            <ol>
+                <li>str</li>
+                <li>list</li>
+                <li>tuple</li>
+                <li>range</li>
+            </ol>
+        </section>
+        <hr>
+        <section>
+            <h2>
+                <a href="https://developer.mozilla.org" target="_blank">
+                    Web
+                </a>
+            </h2>
+            <h3>Basic</h3>
+            <ul>
+                <li>HTML</li>
+                <li>CSS</li>
+            </ul>
+        </section>
+        <!--아이프레임 비교적 최근에 와서 매우 주목, 모든 미디어 장악-->
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/BAJumKb8wvg" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <table>
+            <thead><!--테이블 이름--><!--style어트리뷰트 모두 줄수 있지만 하나도 안 줄 것, CSS에서 하자, html이 더러워진다. 다른 것과 함께 하면 깨지기 때문에 인라인 하지 마라-->
+                <td>점심메뉴</td>
+            </thead>
+            <tr>
+                <th></th><!--테이블 헤더-->
+                <th>월</th>
+                <th>화</th>
+                <th>수</th>
+            </tr>
+            <tr>
+                <td>특식</td>
+                <td>초밥</td>
+                <td>바베큐</td>
+                <td>삼겹살</td>
+            </tr>
+            <tr>
+                <td>한식</td>
+                <td>육개장</td>
+                <td>미역국</td>
+                <td>삼계탕</td>
+            </tr>
+        </table>
+
+        <hr>
+        <!--table>tr>th*3 +tab, 한번에 3개 헤더 가진거 나온다.-->
+        <table>
+            <tr>
+                <th>TIME</th>
+                <th>INDOOR</th>
+                <th colspan="2">OUTDOOR</th><!--colspan="2"는 2칸 먹겠다는 소리-->
+            </tr>
+            <tr>
+                <td></td>
+                <td>소극장</td>
+                <td>잔디마당</td>
+                <td>대공연장</td>
+            </tr>
+            <tr>
+                <td>10:00</td>
+                <td rowspan="2">안녕하신가영</td>
+                <td></td>
+                <td>10cm</td>
+            </tr>
+            <tr>
+                <td>13:00</td>
+                <td rowspan="2">선우정아</td>
+                <td rowspan="2">참깨와 솜사탕</td>
+            </tr>
+            <tr>
+                <td>15:00</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>17:00</td>
+                <td rowspan="2">크러쉬</td>
+                <td></td>
+                <td rowspan="2">폴킴</td>
+            </tr>
+        </table>
+        <h3>Form</h3>
+        <p>자기소개하기</p>
+        <!--제출할때 이 양식이 전부 간다-->
+        <form action="./index.html"><!--index.html로 간다. 값은 어떻게 됐는가?name지어주면 url에 간다.-->
+            <div> <!--디비전은 가로로 차지, 줄 바꾸려고 할때 쓸만하다-->
+                이름:<input name="name" type="text" placeholder="이름을 입력해라!"/><!--셀프 클로징-->
+            </div>
+            <div>
+                나이:<input name="age" type="number"/>
+            </div>
+            <div>
+                Phone:<input name="phone" type="text"/>
+            </div>
+            <div>
+                자기소개:<textarea name="intro"></textarea><!--길 수 있어서-->
+            </div>
+            <input type="submit">
+        </form>
+        <p>주문서를 작성해 주세요</p>
+        <form action="">
+            <div>
+                <!-- autofocus를 해두면 들어오면 그곳으로 바로 간다. -->
+                이름: <input type="text" name="name" value="ssafy"autofocus> 
+            </div>
+            <div>
+                날짜: <input type="date" name="date">
+            </div>
+            <p><strong>1. 샌드위치 선택</strong></p>
+            <!-- radio -->
+            <div>
+                <input type="radio" name="menu" value="steak">스테이크<br>
+                <input type="radio" name="menu" value="turkey abocado">터키 아보카도<br>
+                <input type="radio" name="menu" value="meet ball">미트볼<br>
+            </div>
+            <p><strong>2. 사이즈 선택</strong></p>
+            <!-- number -->
+            <div>
+                <input type="number" name="length" min="15" max="30" step="15" value="15">
+
+            </div>
+            <p><strong>3. 빵</strong></p>
+            <!-- option -->
+            <div>
+                <select name="bread">
+                    <option value="honey-ott">허니오트</option>
+                    <option value="flat-bread">플랫브레드</option>
+                    <option value="hotti-italian">하티 이탈리안</option>
+                </select>
+
+            </div>
+            <p><strong>4.소스</strong></p>
+            <!-- 체크박스 -->
+            <div><!--컨+백스페이스면 단어 단위로 지워진다. 단위 단위 드래그도 된다.alt누르고 바꾸면 줄채로 바뀐다.-->
+                <input type="checkbox" name="sauce" value="hot-chilli"> 핫 칠리<br>
+                <input type="checkbox" name="sauce" value="sweet-chilli"> 스위트 칠리<br>
+                <input type="checkbox" name="sauce" value="ranch"> 랜치<br>
+                <input type="checkbox" name="sauce" value="horseradish"> 홀스 래디쉬<br>
+                <input type="checkbox" name="sauce" value="sweet-onion"> 스위트 어니언<br>
+            </div>
+            <!-- 제출->subway! -->
+            <input type="submit" value = "subway!">
+
+        </form>
+    </body>
+</html>
