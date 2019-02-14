@@ -1,22 +1,25 @@
-N=int(input())
-get=[]
-for i in range(N):
-    get.append(input())
-ans = 0
-for i in get:
-    chk=''
-    chk1=set()
-    for j in i:
-        if (chk!=j) and (j not in chk1):
-            if chk=='':
-                pass
-            else:
-                chk1.add(chk)
-            chk=j
-        elif chk==j:
-            pass
-        else:
-            break
+star = [
+    '*',
+    '* *',
+    '*****'
+]
+space = [
+    ' ',
+    '   ',
+    '     '
+]
+def hall(n):
+    if n==1:
+        return 5
     else:
-        ans += 1
-print(ans)
+        return 2 * hall(n - 1) + 1
+N=24#int(input())
+for i in range(N):
+    print(' ' * (N - 1 - i), end='')
+    for j in range((i // 3) + 1):
+        if (i//3)-1==j:
+            print(space[i % 3], end='')
+        else:
+            print(star[i % 3], end='')
+        print(' '*(5 - 2 * (i%3)), end='')
+    print()
