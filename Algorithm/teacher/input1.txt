@@ -1,5 +1,0 @@
-4
-5 abcde
-10 abcdefghij
-20 aaaaabbbbbccccc
-5 abcde
