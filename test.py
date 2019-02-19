@@ -1,6 +1,7 @@
-ans = [0]
-def sol(ans):
-    ans[0] += 1
-sol(ans)
-sol(ans)
+ans = 0
+def sol():
+    global ans
+    ans += 1
+sol()
+sol()
 print(ans)
