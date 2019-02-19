@@ -1,25 +1,15 @@
-star = [
-    '*',
-    '* *',
-    '*****'
-]
-space = [
-    ' ',
-    '   ',
-    '     '
-]
-def hall(n):
-    if n==1:
-        return 5
-    else:
-        return 2 * hall(n - 1) + 1
-N=24#int(input())
-for i in range(N):
-    print(' ' * (N - 1 - i), end='')
-    for j in range((i // 3) + 1):
-        if (i//3)-1==j:
-            print(space[i % 3], end='')
+T = int(input())
+for test_case in range(T):
+    a, b = list(map(int, input().split()))
+    n = b - a
+    chk = 0
+    i = 1
+    count = 0
+    while chk < n:
+        count += 1
+        chk += i
+        if count % 2:
+            continue
         else:
-            print(star[i % 3], end='')
-        print(' '*(5 - 2 * (i%3)), end='')
-    print()
+            i += 1
+    print(count)
