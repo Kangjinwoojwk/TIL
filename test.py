@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 T = int(input())
 for test_case in range(T):
     a, b = list(map(int, input().split()))
@@ -13,3 +14,12 @@ for test_case in range(T):
         else:
             i += 1
     print(count)
+=======
+ans = 0
+def sol():
+    global ans
+    ans += 1
+sol()
+sol()
+print(ans)
+>>>>>>> 1ee5a3457a29143a7112b36e6f5201d7667f35ed
