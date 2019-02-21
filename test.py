@@ -1,25 +1,39 @@
-<<<<<<< HEAD
-T = int(input())
-for test_case in range(T):
-    a, b = list(map(int, input().split()))
-    n = b - a
-    chk = 0
-    i = 1
-    count = 0
-    while chk < n:
-        count += 1
-        chk += i
-        if count % 2:
-            continue
-        else:
-            i += 1
-    print(count)
-=======
-ans = 0
-def sol():
-    global ans
-    ans += 1
-sol()
-sol()
-print(ans)
->>>>>>> 1ee5a3457a29143a7112b36e6f5201d7667f35ed
+for test_case in range(10):
+    test_num = int(input())
+    arr = [input() for _ in range(100)]
+    ans = 0
+    for i in range(100):
+        for j in range(100):
+            x = 1
+            y = 1
+            while i - x >= 0 and i + x < 100:
+                if arr[i - x][j] == arr[i + x][j]:
+                    x += 1
+                else:
+                    if 2 * (x - 1) + 1 > ans:
+                        ans = 2 * (x - 1) + 1
+                    break
+            while j - y >= 0 and j + y < 100:
+                if arr[i][j - y] == arr[i][j + y]:
+                    y += 1
+                else:
+                    if 2 * (y - 1) + 1 > ans:
+                        ans = 2 * (y - 1) + 1
+                    break
+            x = 1
+            y = 1
+            while i - x >= 0 and i + x - 1 < 100:
+                if arr[i - x][j] == arr[i + x - 1][j]:
+                    x += 1
+                else:
+                    if 2 * (x - 1) > ans:
+                        ans = 2 * (x - 1)
+                    break
+            while j - y >= 0 and j + y - 1 < 100:
+                if arr[i][j - y] == arr[i][j + y - 1]:
+                    y += 1
+                else:
+                    if 2 * (y - 1) > ans:
+                        ans = 2 * (y - 1)
+                    break
+    print(f'#{test_num} {ans}')
