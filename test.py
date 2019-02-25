@@ -1,5 +1,5 @@
 for test_case in range(10):
-    test_num = int(input())
+    test_num = 1
     arr = [input() for _ in range(100)]
     ans = 0
     for i in range(100):
