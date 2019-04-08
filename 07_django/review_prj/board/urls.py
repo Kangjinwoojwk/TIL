@@ -9,7 +9,7 @@ urlpatterns = [
     # /articles/new => html
     path('articles/new/', views.article_new),
     # /articles/create => DB new record
-    path('articles/create', views.article_create),
+    path('articles/create/', views.article_create),
 
     # Read
     # /articles=> html(all articles)
@@ -19,11 +19,11 @@ urlpatterns = [
 
     # Updata
     # /articles/1/edit => html(article id = 1 수정하는 화면)
-    path('articles/<int:id>/update/', views.article_update),
+    path('articles/<int:id>/edit/', views.article_edit),
     # /articles /1/update => DB update article id = 1
-    path('articles/<int:id>/update', views.article_update),
+    path('articles/<int:id>/update/', views.article_update),
 
     # Delete
     # /articels/1/delete => delete article ids = 1
-    path('articles/<int:id>/delete', views.article_delete),
+    path('articles/<int:id>/delete/', views.article_delete),
 ]
