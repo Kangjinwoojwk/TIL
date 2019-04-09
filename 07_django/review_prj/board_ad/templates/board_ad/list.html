@@ -1,0 +1,13 @@
+{% extends 'board_ad/base.html' %}
+{% block body %}
+    <h1>Posting list</h1>
+    <a href="{% url 'board_ad:create_posting' %}"><button>New article</button></a>
+    {% if postings %}
+    <ul>
+    {% for posting in postings %}
+        <li><a href="{% url 'board_ad:posting_detail' posting.id %}">{{ posting.title }}</a>
+        </li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+{% endblock %}

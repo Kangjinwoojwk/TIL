@@ -1,0 +1,40 @@
+{% extends 'board_ad/base.html' %}
+{% block body %}
+    <h1>{{ posting.title }}</h1>
+    <p>
+        {{ posting.content }}
+    </p>
+    <hr>
+    <a href="{% url 'board_ad:posting_list' %}"><button>List</button></a>
+    <a href="{% url 'board_ad:update_posting' posting.id %}"><button>Edit</button></a>
+    <form action="{% url 'board_ad:delete_posting' posting.id %}" method="POST">
+        {% csrf_token %}
+        <button type="submit" onclick="return confirm('지우면 되돌릴 수 없습니다.')">Delete</button>
+    </form>
+    <hr>
+    <form action="{% url 'board_ad:create_comment' posting.id %}" method="POST">
+        {% csrf_token %}
+        <label for="comment"></label>
+        <input type="text" name="comment" id="comment">
+        <button type="submit">댓글쓰기</button>
+    </form>
+    <hr>
+    {% if comments %}
+        <ul>
+        {% for comment in comments %}
+            <form action="{% url 'board_ad:delete_comment' posting.id comment.id %}" method="POST">
+                {% csrf_token %}
+                <li>{{ comment.content }}
+                    <button type="submit" onclick="return confirm('지우면 되돌릴 수 없습니다.')">삭제</button>{{ comment.created_at }}</li>
+            </form>
+        {% endfor %}
+        </ul>
+    {% endif %}
+    <button id="reset_button">WOW</button>
+    <script>
+    button = document.querySelector('#reset_button');
+    button.addEventListener('click', (e) =>{
+        document.write('<h1>hahaha</h1>');
+    })
+    </script>
+{% endblock %}
