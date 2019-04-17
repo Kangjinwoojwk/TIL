@@ -1,5 +1,6 @@
+{% load bootstrap4 %}
 <div class="card my-3">
-    {% if post.image_set %}
+    {% if post.image_set.all %}
         <div id="post{{post.id}}" class="carousel slide carousel-fade" data-ride="carousel">
             <div class="carousel-inner">
                 {% for image in post.image_set.all %}
@@ -18,10 +19,33 @@
             </a>
         </div>
     {% else %}
-        <img src="https://picsum.photo/600" alt="random image" class="card-img-top" />
+        <img src="https://picsum.photos/600" alt="random image" class="card-img-top" />
     {% endif %}
     <div class="card-body">
         <p class="card-text">{{post.content}}</p>
+        <a href="">{{ post.user.username }}</a>
+        {% if post.user == user %}
         <a href="{% url 'posts:update_post' post.id %}" class="btn btn-warning">수정</a>
+        {% endif %}
+    </div>
+    <div class="card-body">
+        {% for comment in post.comment_set.all %}
+            <p class="card-text">
+            <strong>{{ comment.user.username }}</strong>: {{ comment.content }}
+            </p>
+        {% empty %}
+            <p class="card-text">
+            댓글을 달아주세요!
+            </p>
+        {% endfor %}
+    </div>
+    <div class="card-footer">
+        <form action="{% url 'posts:create_comment' post.id %}" method="post">
+            <div>
+                {% csrf_token %}
+                {{ comment_form.content }}
+                <input type="submit" class="btn-warning" value="제출">
+            </div>
+        </form>
     </div>
 </div>
