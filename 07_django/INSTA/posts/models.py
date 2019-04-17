@@ -2,6 +2,7 @@ from django.db import models
 from django_extensions.db.models import TimeStampedModel
 from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFill
+from django.conf import settings
 import os
 ENV = os.environ.get('ENVIRONMENT', 'development')
 if ENV == 'development':  # 개발자와 구분
@@ -11,7 +12,8 @@ faker = Faker()
 
 # Create your models here.
 class Post(TimeStampedModel):
-    content = models.CharField(max_length=140)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    content = models.CharField(max_length=140, )
     # 이미지를 편집해서 저장할 것이다.
     # image = ProcessedImageField(
     #     blank=True,

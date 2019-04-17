@@ -13,8 +13,11 @@ def create_post(request):
         post_form = PostModelForm(request.POST)
         # Data 검증을 한다.
         if post_form.is_valid():
+
             # 통과하면 저장한다.
-            post = post_form.save()
+            post = post_form.save(commit=False)
+            post.user = request.user
+            post.save()
             for image in request.FILES.getlist('file'):
                 request.FILES['file'] = image
                 # files 명시 하지 않으면 맨 앞의 data가 다시 들어간다.
