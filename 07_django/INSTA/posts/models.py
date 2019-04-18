@@ -22,6 +22,7 @@ class Post(TimeStampedModel):
     #     format='JPEG',
     #     options={'quality': 90},
     # )
+    likey_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='likey_posts')
 
     # created_at = models.DateTimeField(auto_now_add=True)
     # updated_at = models.DateTimeField(auto_now=True)

@@ -29,6 +29,13 @@
         {% endif %}
     </div>
     <div class="card-body">
+        <form action="{% url 'posts:togle_likey' post.id %}" method="post">
+        {% csrf_token %}
+            <input type="submit" class={% if user in post.likey_users.all %}"btn-danger"{% else %}"btn-default"{% endif %} value="좋아요">
+            {{ post.likey_users.all.count }}
+         </form>
+    </div>
+    <div class="card-body">
         {% for comment in post.comment_set.all %}
             <p class="card-text">
             <strong>{{ comment.user.username }}</strong>: {{ comment.content }}

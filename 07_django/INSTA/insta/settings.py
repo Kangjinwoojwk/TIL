@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'mton',
     'posts',
     # 'onetoone',
-    'onetomany',
+    # 'onetomany',
     'accounts',
 ]
 

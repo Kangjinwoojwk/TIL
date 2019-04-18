@@ -87,3 +87,21 @@ def create_comment(request, post_id):
         comment.save()
         return redirect('posts:post_list')
     # TODO: else: => if comment is not valid than?
+
+# @login_required
+# def create_like(request, post_id):
+#     user = request.user
+#     post = get_object_or_404(Post, id=post_id)
+#     post.likey_users.add(user)
+
+@login_required
+@require_POST
+def togle_likey(request, post_id):
+    user = request.user
+    post = get_object_or_404(Post, id=post_id)
+    # if post.likey_users.filter(id=user.id).exists():  # 찾으면 [value] 없으면[]
+    if user in post.likey_users.all():
+        post.likey_users.remove(user)
+    else:
+        post.likey_users.add(user)
+    return redirect('posts:post_list')

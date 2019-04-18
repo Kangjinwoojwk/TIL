@@ -14,6 +14,8 @@ faker = Faker()
 
 class Client(models.Model):
     name = models.CharField(max_length=30)
+    class Meta:
+        ordering = ('name', )
 
     @classmethod
     def dummy(cls, n):
@@ -23,7 +25,7 @@ class Client(models.Model):
 
 class Hotel(models.Model):
     name = models.CharField(max_length=30)
-    clients = models.ManyToManyField(Client)  # 알아서M:N릴레이션 만들어 준다
+    clients = models.ManyToManyField(Client, related_name='hotels')  # 알아서M:N릴레이션 만들어 준다
 
     @classmethod
     def dummy(cls, n):
