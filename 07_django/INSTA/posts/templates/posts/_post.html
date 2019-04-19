@@ -23,7 +23,7 @@
     {% endif %}
     <div class="card-body">
         <p class="card-text">{{post.content}}</p>
-        <a href="">{{ post.user.username }}</a>
+        <a href="{% url 'accounts:user_detail' post.user.username %}">{{ post.user.username }}</a>
         {% if post.user == user %}
         <a href="{% url 'posts:update_post' post.id %}" class="btn btn-warning">수정</a>
         {% endif %}
