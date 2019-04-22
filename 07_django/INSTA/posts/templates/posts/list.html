@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% block body %}
+    {% if h1 %}
+        <h1>{{ h1 }}</h1>
+    {% else %}
     <h1>Posts</h1>
+    {% endif %}
     <section class="card-columns">
         {% for post in posts %}
             {% include 'posts/_post.html' with post=post comment_form=comment_form%}

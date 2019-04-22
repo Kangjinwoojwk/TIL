@@ -10,6 +10,13 @@ if ENV == 'development':  # 개발자와 구분
 faker = Faker()
 
 
+class HashTag(models.Model):
+    content = models.CharField(max_length=20, unique=True)
+
+    def __str__(self):
+        return self.content
+
+
 # Create your models here.
 class Post(TimeStampedModel):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -23,7 +30,7 @@ class Post(TimeStampedModel):
     #     options={'quality': 90},
     # )
     likey_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='likey_posts')
-
+    tags = models.ManyToManyField(HashTag, blank=True, related_name='posts')
     # created_at = models.DateTimeField(auto_now_add=True)
     # updated_at = models.DateTimeField(auto_now=True)
     @classmethod
