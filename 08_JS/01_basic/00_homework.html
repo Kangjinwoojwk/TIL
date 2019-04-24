@@ -11,9 +11,11 @@
 <body>
     <h1>Hello World!</h1>
     <script>
-        let header = document.querySelector('h1').innerText;
-        console.log(header);
-        header = 'Happy Hachking!';
+        let header = document.querySelector('h1');
+        // 2. 브라우저 콘솔에 내용 출력
+        console.log(header.innerText);
+        // 3. header 내용 변경
+        header.innerText = 'Happy Hachking!';
 
     </script>
 </body>

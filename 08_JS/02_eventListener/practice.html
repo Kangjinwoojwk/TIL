@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body id="body">
+<ul id="my">
+
+</ul>
+<button id = "this-button">Click me</button>
+<script>
+    const name = prompt('이름이 어떻게 되세요?');
+    const age = prompt('나이가 어떻게 되세요?');
+    if (age > 30){
+        str = '노땅';
+    }
+    else{
+        str = '애기';
+    }
+    const body = document.querySelector('#body');
+    body.innerHTML = `<h1>${name}님 어서오세요.</h1>`+ body.innerHTML;
+    const area = document.querySelector('#my');
+    area.innerHTML+=`<li>${str} 와쪄요.</li>`;
+    const botton = document.querySelector('#this-button');
+    botton.addEventListener('mouseover', e => {
+        setTimeout(alert('누르지 마시오.'), 300);
+    });
+    botton.addEventListener('click', e => {
+        area.innerHTML+=`<li>${str}</li>`;
+    });
+</script>
+</body>
+</html>
