@@ -37,7 +37,8 @@ def login(request):
                 auth_login(request, form.get_user())
                 messages.add_message(request, messages.SUCCESS, f'welcome back,{user.username}')
                 messages.add_message(request, messages.INFO, f'마지막 로그인은 {user.last_login}입니다.')
-                return redirect(request.GET.get('next') or 'posts:post_list')
+                print(request.META.get('HTTP_REFERER', '/insta/'))
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/insta/'))
         # 사용자가 로그인 화면을 요청할때
         else:
             form = CustomUserAuthenticationsForm()
@@ -49,7 +50,7 @@ def login(request):
 def logout(request):
     auth_logout(request)
     messages.add_message(request, messages.SUCCESS, f'Logout Successfully')
-    return redirect('posts:post_list')
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/insta/'))
 
 
 def user_detail(request, username):
