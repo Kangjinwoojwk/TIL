@@ -1,9 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404, HttpResponseRedirect
+from django.http.response import JsonResponse, HttpResponseBadRequest
 from django.views.decorators.http import require_GET, require_POST, require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Post, Image, HashTag
 from .forms import PostModelForm, ImageModelForm, CommentModelForm
+from IPython import embed
 
 @login_required
 @require_http_methods(['GET', 'POST'])
@@ -120,14 +122,20 @@ def create_comment(request, post_id):
 @login_required
 @require_POST
 def togle_likey(request, post_id):
-    user = request.user
-    post = get_object_or_404(Post, id=post_id)
-    # if post.likey_users.filter(id=user.id).exists():  # 찾으면 [value] 없으면[]
-    if user in post.likey_users.all():
-        post.likey_users.remove(user)
+    if request.is_ajax():
+        user = request.user
+        post = get_object_or_404(Post, id=post_id)
+        is_active = True
+        # if post.likey_users.filter(id=user.id).exists():  # 찾으면 [value] 없으면[]
+        if user in post.likey_users.all():
+            post.likey_users.remove(user)
+            is_active = False
+        else:
+            post.likey_users.add(user)
+        return JsonResponse({'likeCount': post.likey_users.count(), 'is_active': is_active})
+        # return redirect('posts:post_list')
     else:
-        post.likey_users.add(user)
-    return redirect('posts:post_list')
+        return HttpResponseBadRequest()
 
 @require_GET
 def tag_posts_list(request, tag_name):

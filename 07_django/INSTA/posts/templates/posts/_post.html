@@ -29,13 +29,22 @@
         {% endif %}
     </div>
     <div class="card-body">
+        <!-- 좋아요버튼1-->
         <form action="{% url 'posts:togle_likey' post.id %}" method="post">
         {% csrf_token %}
-            <input type="submit" class={% if user in post.likey_users.all %}"btn-danger"{% else %}"btn-default"{% endif %} value="좋아요">
-            {{ post.likey_users.all.count }}
+            <input type="submit" class="{% if user in post.likey_user.all %}btn-danger{% else %}btn-default{% endif %}" value="좋아요">
+            {{ post.likey_users.count }}
          </form>
+        <!-- 좋아요 버튼2 -->
+    {% if user in post.likey_users.all %}
+        <i class="activate like-button fas fa-thumbs-up fa-2x" data-id="{{ post.id }}"></i>
+    {% else %}
+        <i class="like-button fas fa-thumbs-up fa-2x" data-id="{{ post.id }}"></i>
+    {% endif %}
+
+    <p class="card-text">좋아요 <span id="like-count-{{ post.id }}">{{post.likey_users.count}}</span>개</p>
     </div>
-    <div class="card-body">
+        <div class="card-body">
         {% for comment in post.comment_set.all %}
             <p class="card-text">
             <strong>{{ comment.user.username }}</strong>: {{ comment.content }}

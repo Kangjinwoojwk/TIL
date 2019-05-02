@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="app">
+    {{ message }}
+</div>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script>
+    const app = new Vue({
+        // mount
+        el:'#app',
+        // app init state - MUST object
+        data: {
+            message: 'Hello, World!',
+            count:0,
+        },
+
+        methods:{
+            plus:function(){
+                this.count++;
+            }
+        }
+    });
+    app.plus();
+    console.log(app.count);
+</script>
+</body>
+</html>
