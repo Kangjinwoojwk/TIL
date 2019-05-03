@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .safe-spot {
+            color:white;
+            background-color: blue;
+            height: 10rem;
+            margin: 2rem;
+        }
+        .dead-spot {
+            color:white;
+            background-color: darkred;
+            height: 4rem;
+            margin: 2rem;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+<!--    event 인자를 안넘기고 ()가 없으면 event만 무조건 잡히기 때문에 그 인자가 넘어간다.
+event인자를 넘길때는 $event라고 해주어야 event라고 안다.-->
+    <button v-on:click="counter++">up</button>
+    <button v-on:click="down($event, 3)">down</button>
+    <p>{{counter*2 > 10 ? 'n>10' : 'n<10'}}</p>
+
+    <ul>
+        <li v-for="number in numbers.map(num => num *2)">{{number*4}}</li>
+    </ul>
+    <div>
+        <input type="text" v-on:keyup.enter="alertMe">
+    </div>
+
+    <table>
+        <tr>
+            <th>x coord</th>
+            <th>y coord</th>
+        </tr>
+        <tr>
+            <th>{{x}}</th>
+            <th>{{y}}</th>
+        </tr>
+    </table>
+    <div class="safe-spot" v-on:mousemove="getMouseCoord">
+        Safe ZONE
+        <div class="dead-spot" v-on:mousemove="stop">Danger!</div>
+    </div>
+</div>
+<script src="./vue.js"></script>
+<script>
+    new Vue({
+        el:'#app',
+        data: {
+            counter:0,
+            x:0,
+            y:0,
+            numbers:[1, 2, 3, 4, 5],
+        },
+        methods:{
+            up(e) {this.counter+=e.clientX;},
+            down(e,n) {this.counter-=e.clientY;},
+            getMouseCoord(e){
+                this.x=e.clientX;
+                this.y=e.clientY;
+            },
+            stop(){
+                alert('YOU DIED');
+            },
+            alertMe(e){
+                alert('hey!');
+            },
+        }
+    })
+</script>
+</body>
+</html>
