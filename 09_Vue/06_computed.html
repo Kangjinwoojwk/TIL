@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<a href="https://kr.vuejs.org/v2/guide/computed.html">공식문서</a>
+<div id="app">
+<!--
+{{}}안에 쓰연 안되는 것들
+    1.{{let i = 1}} 변수 선언 X
+    2. {{message.split('').reverse().join('')}} Bad way
+    3. {{if (condition) {do Something}}} X/ {{condition? a:b}} O
+-->
+    <p>원본 메시지:{{message}}</p>
+    <p>뒤집 메시지:{{reverseMessage()}}</p>
+    <p>{{dateMethod()}}</p>
+    <p>{{dateComputed}}</p>
+    {{reversedMessage}}
+
+</div>
+<script src="./vue.js"></script>
+<script>
+     const app = new Vue({
+         el:'#app',
+         data:{
+             message:'안녕하세요',
+             d:Date.now(),
+         },
+         methods:{
+             reverseMessage(){
+                 return this.message.split('').reverse().join('')
+             },
+             dateMethod(){
+                 return Date.now()
+             },
+         },
+         computed:{ // computed 안은 실행이 되어 있고 이름으로 값을 가져 온다.
+             reversedMessage(){
+                 return this.message.split('').reverse().join('')
+             },
+             dateComputed(){
+                 return Date.now()
+             }
+         },
+     })
+</script>
+</body>
+</html>

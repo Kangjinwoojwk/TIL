@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .completed {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <select v-model="status">
+        <option value="all" selected>모두 보기</option>
+        <option value="active">안 끝남</option>
+        <option value="completed">끝남</option>
+    </select>
+    <input type="text" v-model="newTodo" v-on:keyup.enter="addTodo()">
+    <button @click="addTodo()">todo</button>
+    <button v-on:click="clearCompleted()">clear completed</button>
+    <ol v-if="todos.length">
+<!--        <li v-for="todo in todos" v-bind:class="{completed: todo.completed}">-->
+        <li v-for="todo in groupTodosByStatus()" v-bind:class="todo.completed? 'completed':''" v-bind:key="todo.id">
+            <input type="checkbox" v-model="todo.completed">
+            <span>{{todo.content}}</span>
+        </li>
+    </ol>
+</div>
+<script src="./vue.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data:{
+            todos: [
+                {
+                    content:'저녁 메뉴 고민하기',
+                    completed:true,
+                },
+                {
+                    content:'시험 공부 하기',
+                    completed:false,
+                },
+                {
+                    content:'집 살 걱정하기',
+                    completed:false,
+                },
+                {
+                    content:'행복하기',
+                    completed:false,
+                },
+            ],
+            newTodo:'',
+            status:'all',
+        },
+        methods: {
+            check: function (todo = {}) {
+                todo.completed = !todo.completed
+            },
+            addTodo (){
+                if(this.newTodo) {
+                    this.todos.push({
+                        id:Date.now(),
+                        content: this.newTodo,
+                        completed: false
+                    });
+                    this.newTodo = ''
+                }
+            },
+            clearCompleted (){
+                this.todos = this.todos.filter(todo =>!todo.completed)
+            },
+            groupTodosByStatus(){
+                if(this.status ==='active'){
+                    return this.todos.filter(todo=>!todo.completed)
+                }
+                else if(this.status === 'completed'){
+                    return this.todos.filter(todo=>todo.completed)
+                }
+                else{
+                    return this.todos;
+                }
+            },
+        },
+        computed: {
+            groupTodosByStatus(){
+                if(this.status ==='active'){
+                    return this.todos.filter(todo=>!todo.completed)
+                }
+                else if(this.status === 'completed'){
+                    return this.todos.filter(todo=>todo.completed)
+                }
+                else{
+                    return this.todos;
+                }
+            },
+        },
+    })
+</script>
+</body>
+</html>

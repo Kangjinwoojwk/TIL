@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<div id="app">
+    <input type="text" v-model="newTodo" v-on:keyup.enter="addTodo()">
+    <button @click="addTodo()">todo</button>
+    <button v-on:click="clearCompleted()">clear completed</button>
+    <ol>
+        <li v-for="todo in todos" v-if="!todo.completed" v-on:click="check(todo)">
+            {{todo.content}}
+        </li>
+        <li v-else v-on:click="check(todo)">[완료!]</li>
+    </ol>
+</div>
+<script src="./vue.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data:{
+            todos: [
+                {
+                    content:'저녁 메뉴 고민하기',
+                    completed:true,
+                },
+                {
+                    content:'시험 공부 하기',
+                    completed:false,
+                },
+                {
+                    content:'집 살 걱정하기',
+                    completed:false,
+                },
+                {
+                    content:'행복하기',
+                    completed:false,
+                },
+            ],
+            newTodo:''
+        },
+        methods: {
+            check: function (todo = {}) {
+                todo.completed = !todo.completed
+            },
+            addTodo (){
+                if(this.newTodo) {
+                    this.todos.push({
+                        content: this.newTodo,
+                        completed: false
+                    });
+                    this.newTodo = ''
+                }
+            },
+            clearCompleted (){
+                this.todos = this.todos.filter(todo =>!todo.completed)
+            }
+        },
+    })
+</script>
+</body>
+</html>

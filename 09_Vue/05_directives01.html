@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<div id="app">
+    <h2 v-if="eng">Hi</h2>
+    <h2 v-show="kor">안녕</h2>
+    {{message}}
+    {{status?'Good':'Bad'}}
+    {{ message | capitalize}}
+    <template v-if="status">
+        <h1>Good</h1>
+        <p>
+            It's good to see you again
+        </p>
+    </template>
+    <p v-if="type === 'A'">A</p>
+    <p v-else-if="type ==='B'">B</p>
+    <p v-else-if="type ==='C'">C</p>
+    <p v-else>?</p>
+</div>
+<script src="./vue.js"></script>
+<script>
+    new Vue({
+        el:'#app',
+        data:{
+            message:'ssafy',
+            type:'A',
+            status:true,
+            eng:true,
+            kor:true,
+        },
+        methods:{},
+        filters:{ // filter는 app내에서 '|'기준으로 움직인다 | 뒤의 것에 앞의 것을 가져간다.
+            capitalize(value){
+                if(!value) return '';
+                value = value.toString();
+                return value.charAt(0).toUpperCase() + value.slice(1); //1번 이후 전부
+            }
+        }
+    })
+</script>
+</body>
+</html>

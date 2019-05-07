@@ -1,5 +1,11 @@
 // 하나의 함수로 안되나?
 // 숫자로 이루어진 배열의 요소들을 각각 [???] 한다. [???] 는 알아서 해라.
+function myFunc() {
+    return n => n + 1
+}
+// const func = myFunc();
+// const num_101 = func(100); // 101이 되도록하세요.
+const num_101 = myFunc()(100);
 const numberEach=(numbers, callback) =>{
     let acc;
     for (const number of numbers){
