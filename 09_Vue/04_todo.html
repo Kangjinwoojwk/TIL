@@ -21,28 +21,22 @@
 </div>
 <script src="./vue.js"></script>
 <script>
-    new Vue({
+    const todosApp = {
+        storageKey = 'my-todos'
+        fetch: function () {
+            return JSON.parse(localStorage.getItem(this.storeageKey))
+        },
+        save(todos){
+            localStorage.setItem(this.storeageKey, JSON.stringify(todos))
+        }
+
+    };
+    const app = new Vue({
         el: '#app',
         data:{
-            todos: [
-                {
-                    content:'저녁 메뉴 고민하기',
-                    completed:true,
-                },
-                {
-                    content:'시험 공부 하기',
-                    completed:false,
-                },
-                {
-                    content:'집 살 걱정하기',
-                    completed:false,
-                },
-                {
-                    content:'행복하기',
-                    completed:false,
-                },
-            ],
-            newTodo:''
+            todos: todosApp.fetch() || [],
+            newTodo:'',
+            status:'all'
         },
         methods: {
             check: function (todo = {}) {
