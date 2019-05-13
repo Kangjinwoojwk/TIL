@@ -30,7 +30,8 @@ class Hotel(models.Model):
     @classmethod
     def dummy(cls, n):
         for i in range(n):
-            cls.objects.create(name=faker.company())
+            a = cls.objects.create(name=faker.company())
+            print(a)
 
 
 class Student(models.Model):
