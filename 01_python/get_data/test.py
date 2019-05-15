@@ -1,13 +1,18 @@
 import requests
 import datetime
 import os
-date = datetime.datetime.now()
+
 KEY = os.getenv('KOBIS_KEY')
 DOMAIN = f'http://www.kobis.or.kr/kobisopenapi/webservice/rest/movie/searchMovieList.json?key={KEY}'
+date = datetime.datetime.now()
+date -= datetime.timedelta(days=1)
+date = date.strftime('%Y%m%d').replace(' ', '')
+print(date)
+
 # for year in range(500):
-while date.strftime('%Y%m%d') > '20110101':
-    date -= datetime.timedelta(days=1)
-    print(date.strftime('%Y %m %d').replace(' ', ''))
+# while date.strftime('%Y%m%d') > '20110101':
+#     date -= datetime.timedelta(days=1)
+#     print(date.strftime('%Y %m %d').replace(' ', ''))
     # curPage = 1
     # naver_uri = 'https://openapi.naver.com/v1/search/movie.json?query='
     # headers = {
