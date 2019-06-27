@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- META -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <meta property="og:title" content="og title" />
+    <meta property="og:description" content="og desc" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="" />
+    <meta property="og:url" content="" />
+    <meta name="keywords" content="key1, key2, key3" />
+    <meta name="description" content="desc" />
+
+    <!-- Favicon -->
+    <link href="" rel="shortcut icon" />
+
+    <!-- CSS -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:700&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="./css/reset.css" />
+    <link rel="stylesheet" href="./css/style.css" />
+
+    <!--JS-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="./js/ld.js"></script>
+
+    <title>Kang Jinwoo</title>
+  </head>
+  <body>
+    <!-- Header -->
+    <div class="header-wrapper">
+      <div class="header-contents">
+        <!-- 타이틀 -->
+        <p class="title" onclick="ssafy.ld.goPage(0)">Kang Jinwoo</p>
+
+        <!-- 상단 메뉴 && 모바일 메뉴 -->
+        <div class="nav-bar">
+          <ul>
+            <li>
+              <a class="a-nav-bar" onClick="ssafy.ld.goPage(1)">About Me</a>
+            </li>
+            <li>
+              <a class="a-nav-bar" onClick="ssafy.ld.goPage(2)">Skills</a>
+            </li>
+            <li>
+              <a class="a-nav-bar" onClick="ssafy.ld.goPage(3)">Ability</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main -->
+    <div class="main-wrapper">
+      <!-- section-1 -->
+      <div class="section section-1">
+        <div class="section-1-background"></div>
+        <div class="section-content">
+          <!-- To do -->
+          <h1>
+            <span>Kang Jinwoo</span><br />
+            <span>Hire Kang</span>
+          </h1>
+        </div>
+        <!-- Scroll Down Button -->
+        <button class="btn-scroll-down" onclick="ssafy.ld.goPage(1)">
+          Scroll down
+        </button>
+      </div>
+
+      <!-- section-2 : 자기소개 -->
+      <div class="section section-2">
+        <div class="section-content">
+          <!-- To do -->
+          <div>
+            <h2 class="txt">Kang Jinwoo</h2>
+            <p class="txt">
+              안녕하세요.<br>
+              호기심과 끈기로 개발하는 강진우입니다. <br>
+              채용하고 싶다면 언제든 연락주세요. <br>
+              늘 궁금한 게 많아서 책을 많이 읽습니다. <br>
+              그런 지식을 바탕으로 새로운 제품을 만드는데 혈안이 되어 있습니다.<br>
+              의자처럼 있으면 일할때 편합니다. <br>
+              왜 아직 전화를 안드셨나요? 어서 연락하세요. 강진우입니다.
+            </p>
+          </div>
+          <div>
+            <img src="assets/img/img-about-book.jpg" alt="" width="600">
+          </div>
+        </div>
+      </div>
+
+      <!-- section-3 : 보유 기술 역량 -->
+      <div class="section section-3">
+        <div class="section-content">
+          <!-- To do -->
+          <h2>Skills</h2>
+          <div>
+            <ul>
+              <li>C++</li>
+              <li><span class="score score-cpp"></span></li>
+              <li>Java</li>
+              <li><span class="score score-java"></span></li>
+              <li>HTML5</li>
+              <li><span class="score score-html5"></span></li>
+              <li>Javascript</li>
+              <li><span class="score score-javascript"></span></li>
+            </ul>
+            <ul>
+              <li>Python</li>
+              <li><span class="score score-python"></span></li>
+              <li>MySQL</li>
+              <li><span class="score score-mysql"></span></li>
+              <li>CSS</li>
+              <li><span class="score score-css"></span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="section section-4">
+        <div class="section-content">
+          <!-- To do -->
+          <h2>Ability</h2>
+          <div>
+            <ul>
+              <li>Requirements analysis</li>
+              <li><span class="score score-requirements-analysis"></span></li>
+              <li>Algorithm</li>
+              <li><span class="score score-algorithm"></span></li>
+              <li>curiosity</li>
+              <li><span class="score score-curiosity"></span></li>
+            </ul>
+            <ul>
+              <li>Communication</li>
+              <li><span class="score score-communication"></span></li>
+              <li>patience</li>
+              <li><span class="score score-patience"></span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- footer-->
+      <div class="footer">
+        <p>Copyright 2019 by Kang Jinwoo</p>
+      </div>
+    </div>
+
+    <!-- init script -->
+    <script type="text/javascript" charset="utf-8">
+      $(document).ready(function() {
+        // scroll active
+        setTimeout(function() {
+          var items = document.querySelectorAll(".section");
+          items[0].classList.add("active");
+        }, 500);
+
+        ssafy.ld.init();
+      });
+    </script>
+  </body>
+</html>
