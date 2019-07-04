@@ -191,6 +191,6 @@ with tf.Session() as sess: # with가 끝나면 알아서 close된다.
 cost = tf.reduce_mean(-tf.reduce_sum(Y * tf.log(model),axis=1))
 ```
 
-
-
 * 손실함수(비용함수), cost는 여기에서 따왔습니다.
+
+reduce_xxx 함수는 텐서의 차원 줄여줌, xxx는 축소 방법, axis매개별수로 축소할 차원 정해줌, reduce_sum(<입력 텐서>,axis=1)은 주어진 텐서의 1번째 차원의 값들을 다 더해 값 1개로 만들어서 그 차원을 없앤다는 뜻, sum외에 prod, min, max, mean, all(논리적 AND), any(논리적 OR), logsumexp등을 제공
