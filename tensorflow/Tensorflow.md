@@ -479,3 +479,244 @@ tf.layers.batch_nomalization(L1, training = is_traing)
 
 ### matplotlib
 
+* 시각화 그래프 쉽게 그려주는 파이썬 라이브러리, 학습 결과를 손글씨 이미지로 확인하는 예제 만들자
+
+```python
+import tensorflow as tf
+from tensorflow.examples.tutorials.mnist import input_data
+mnist = input_data.read_data_sets('./mnist/data/', one_hot=True)#데이터 내려 받고 레이블을 원핫인코딩방식으로 읽는다.
+X = tf.placeholder(tf.float32, [None,784]) # None은 크기가 정해지지 않았다는 것, 한번에 학습시킬 MNIST 이미지 개수 지정 값
+Y = tf.placeholder(tf.float32, [None,10]) # 배치 크기 미리 정해도 되지만 학습 개수 계속 바꿔가면서 실험하려는 경우 None넣으면 알아서 계산
+# 신경망 구축
+W1 = tf.Variable(tf.random_normal([784, 256], stddev=0.01))
+L1 = tf.nn.relu(tf.matmul(X,W1))
+
+W2 = tf.Variable(tf.random_normal([256, 256], stddev=0.01))
+L2 = tf.nn.relu(tf.matmul(L1, W2))
+
+W3 = tf.Variable(tf.random_normal([256, 10], stddev=0.01))
+model = tf.matmul(L2, W3)
+# 손실값 구하고 평균 송실값 구하기, 최적화 수행하도록 그래프 구성
+cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits=model, labels=Y))
+optimizer = tf.train.AdamOptimizer(0.001).minimize(cost)
+init = tf.global_variables_initializer()
+sess = tf.Session()
+sess.run(init)
+batch_size = 100
+total_batch = int(mnist.train.num_examples / batch_size)
+for epoch in range(15):
+    total_cost = 0
+    for i in range(total_batch):
+        batch_xs, batch_ys = mnist.train.next_batch(batch_size)
+        _, cost_val = sess.run([optimizer, cost],
+                              feed_dict={X:batch_xs, Y:batch_ys})
+        total_cost += cost_val
+    print('Epoch:','%04d' % (epoch+1),
+         'Avg.cost = ', '{:3f}'.format(total_cost / total_batch))
+print('최적화 완료!')
+
+is_correct = tf.equal(tf.argmax(model,1), tf.argmax(Y,1))
+accuracy = tf.reduce_mean(tf.cast(is_correct, tf.float32))
+print('정확도:',sess.run(accuracy,
+                     feed_dict={X:mnist.test.images,
+                               Y:mnist.test.labels}))
+keep_prob = tf.placeholder(tf.float32) # 학습에는 떼놔도 예측시에는 전부 사용 하도록 설정하기 위한 것
+
+W1 = tf.Variable(tf.random_normal([784, 256], stddev=0.01))
+L1 = tf.nn.relu(tf.matmul(X, W1))
+L1 = tf.nn.dropout(L1, keep_prob) # dropout 쓰기만 하면 작용, 0.8은 80% 뉴런을 사용하겠다는 것
+
+W2 = tf.Variable(tf.random_normal([256, 256], stddev=0.01))
+L2 = tf.nn.relu(tf.matmul(L1,W2))
+L2 = tf.nn.dropout(L2, keep_prob)
+
+_, cost_val = sess.run([optimizer, cost], feed_dict={X:batch_xs, Y: batch_ys, keep_prob:0.8}) # 0.8은 80%의 뉴런만 쓰겠다는 것
+print('정확도:', sess.run(accuracy, feed_dict={X:mnist.test.images,
+                                           Y: mnist.test.labels,
+                                           keep_prob:1})) # 예상할때는 전부 사용
+keep_prob = tf.placeholder(tf.float32) # 학습에는 떼놔도 예측시에는 전부 사용 하도록 설정하기 위한 것
+
+W1 = tf.Variable(tf.random_normal([784, 256], stddev=0.01))
+L1 = tf.nn.relu(tf.matmul(X, W1))
+L1 = tf.nn.dropout(L1, keep_prob) # dropout 쓰기만 하면 작용, 0.8은 80% 뉴런을 사용하겠다는 것
+
+W2 = tf.Variable(tf.random_normal([256, 256], stddev=0.01))
+L2 = tf.nn.relu(tf.matmul(L1,W2))
+L2 = tf.nn.dropout(L2, keep_prob)
+
+W3 = tf.Variable(tf.random_normal([256,10], stddev=0.01))
+model = tf.matmul(L2,W3)
+cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits=model, labels=Y))
+optimizer = tf.train.AdamOptimizer(0.001).minimize(cost)
+
+init = tf.global_variables_initializer()
+sess = tf.Session()
+sess.run(init)
+
+batch_size = 100
+total_batch = int(mnist.train.num_examples / batch_size)
+
+for eposh in range(3):
+    total_cost = 0
+    
+    for i in range(total_batch):
+        batch_xs, batch_ys = mnist.train.next_batch(batch_size)
+        
+        _, cost_val = sess.run([optimizer, cost],
+                              feed_dict = {X:batch_xs,
+                                          Y:batch_ys,
+                                          keep_prob:0.8})
+        total_cost += cost_val
+    print('Epoch:', '%04d' % (epoch+1),
+         'Avg. cost =', '{:.3f}'.format(total_cost/total_batch))
+print('최적화 완료!')
+
+is_correct = tf.equal(tf.argmax(model,1), tf.argmax(Y, 1))
+accuracy = tf.reduce_mean(tf.cast(is_correct, tf.float32))
+print('정확도:', sess.run(accuracy, feed_dict={X:mnist.test.images, Y:mnist.test.labels, keep_prob:1}))
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+labels = sess.run(model, feed_dict={X: mnist.test.images,
+                                   Y: mnist.test.labels,
+                                   keep_prob: 1})
+fig = plt.figure()
+for i in range(10): # 2행 5열 그래프 제작, i+1번째 숫자에 이미지 출력
+    subplot = fig.add_subplot(2, 5, i + 1) # 깨끗한 이미지 위해 x,y 눈금 미출력
+    subplot.set_xticks([])
+    subplot.set_yticks([])
+    subplot.set_title('%d' % np.argmax(labels[i])) # 출력 이미지 위 예측 숫자 출력, np.argmax는 tf.argmax와 같은 기능
+    #결괏값인 labels의 i번째 요소가 원-핫 인코딩 형식으로 되어 있으므로, 해당 배열에가 가장 높은 값을 가진 인덱스를 예측한 숫자로 출력
+    # 1차원 배열로 되어 있는 i번째 이미지 데이터를 28x28 형식의 2차원 배열로 변형하여 이미지 형태로 출력
+    # cmap 파라미터를 통해 이미지를 그레이 스케일로 출력
+    subplot.imshow(mnist.test.images[i].reshape((28,28)), cmap=plt.cm.gray_r)
+    
+plt.show()
+```
+
+## CNN
+
+### CNN
+
+신경망 구성 다양, 방식 따라 해결 성능 달라지고 새로운 방식 사용가능, 신경망 구성 방식 연구가 신경망 학습에 중요
+
+* CNN(합성곱 신경망): 얀 레쿤 교수가 1998년 제안, 강력한 성능, 음성인식이나 자연어 처리에도 응용 중
+
+### CNN 개념
+
+* 컨볼루션 계층: CNN에서 가중치와 편향을 적용하는 계층
+* 풀링 계층: 컨볼루션에서 계산된 값들 중 하나의 선택해서 가져 오는 계층
+
+개념은 간단, 2차원의 평면 행렬에서 지정한 영역의 값들을 하나의 값으로 압축, 컴볼루션에서 가중치와 편향 적용, 풀링은 선택
+
+일정 크기의 윈도우를 설정, 오른쪽, 아래쪽으로 한칸씩 움직이며 은닉층 제작, 움직이는 크기 변경 가능
+
+* 스트라이드: CNN에서 몇 칸씩 움직일지 정하는 값
+
+윈도우 하나를 은닉층의 뉴런 하나로 압축 할때, 컴볼루션 계층에서 윈도우 크기만큼의 가중치와 1개의 편향을 적용, 윈도우 크기가 3x3이면 3x3개의 가중치와 1개의 편향
+
+* 커널(필터):윈도우가 은닉층 뉴런 하나로 압축 될때 필요한 가중치와 편향, 은닉층을 만들기 위한 모든 윈도우에 공통 적용
+
+가중치를 만드는 것이 CNN의 특징, 원래라면 28x28 입력층이 있으면 기본 신경망으로 모든 뉴런 연결하면 784개의 가중치를 찾아야 하지만, 컨볼루션 계층에서는 3x3인 커널만 찾으면 된다. 계산량이 줄어서 학습이 더 빠르고 효율적
+
+하나의 커널로는 복잡한 이미지 분석 어려워 커널 여러 개 사용, 하이퍼파라미터의 하나로써 커널 개수 정하는 일 역시 중요
+
+### 모델구현하기
+
+* 완전 연결 계층: 인접한 모든 뉴런과 상호 연결된 계층
+
+```python
+import tensorflow as tf
+from tensorflow.examples.tutorials.mnist import input_data
+mnist = input_data.read_data_sets("./mnist/data/", one_hot=True)
+
+# 2차원 구성으로 직관적, X의 첫차원은 입력 데이터 개수, 마지막 1은 특징 개수, 데이터가 회색조라 색깔 하나뿐이라 1
+X = tf.placeholder(tf.float32, [None, 28, 28, 1])
+# 출력값 10개 분류
+Y = tf.placeholder(tf.float32, [None, 10])
+# dropout위한 플레이스 홀더
+keep_prob = tf.placeholder(tf.float32)
+
+# 3x3 커널 가진 컨볼루션 계층 제작, 오른쪽과 아래쪽으로 한칸씩 움직이는 32개 커널 가진 컨볼루션 계층
+W1 = tf.Variable(tf.random_normal([3,3,1,32], stddev=0.01))
+# padding은 커널 슬라이딩 시 이미지의 가장 외곽에서 한칸 밖으로 움직이는 옵션
+L1 = tf.nn.conv2d(X, W1, strides=[1,1,1,1], padding='SAME')
+# 활성함수, 컴볼루션 완성
+L1 = tf.nn.relu(L1)
+
+# 풀링계층 만들기, 앞에 만큼 컨볼루션 계층을 입력으로 사용, 커널 크기 2x2인 풀링 계층
+# strides는 승라이딩 시 두 칸씩 움직이겠다는 옵션
+L1 = tf.nn.max_pool(L1, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
+
+# 3x3커널 64개로 구성한 컨볼루션 계층과 2x2크기의 풀링 계층으로 구성
+# 32는 앞서 구성한 첫번째 컨볼루션 계층의 커널 개수
+W2 = tf.Variable(tf.random_normal([3, 3, 32, 64], stddev=0.01))
+L2 = tf.nn.conv2d(L1, W2, strides=[1,1,1,1], padding='SAME')
+L2 = tf.nn.relu(L2)
+L2 = tf.nn.max_pool(L2, ksize=[1,2,2,1], strides = [1,2,2,1], padding='SAME')
+
+# 추출한 특징으로 10개의 분류를 만들어내는 계층 구성
+# 10개 분류는 1차원, 차원 줄이기부터! 직전 풀링이 7*7*64이므로 그크기의 1차원 계층 제작
+# 배열 전체를 최종 출력값의 중간 단계인 256개 뉴럼으로 연결하는 신경망 제작
+W3 = tf.Variable(tf.random_normal([7 * 7 * 64, 256], stddev=0.01))
+L3 = tf.reshape(L2, [-1, 7 * 7 * 64])
+L3 = tf.matmul(L3, W3)
+L3 = tf.nn.relu(L3)
+# 과적합 막기 dropout 사용
+L3 = tf.nn.dropout(L3, keep_prob)
+
+# 직전 은닉층 출력값 256개 받아 0~9출력 값인 10개 출력값 제작
+W4 = tf.Variable(tf.random_normal([256, 10], stddev=0.01))
+model = tf.matmul(L3, W4)
+
+cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits=model, labels=Y))
+# 추후 optimizer = tf.train.RMSPropOptimizer(0.001, 0.9).minimize(cost)를 써서 비교해보자
+optimizer = tf.train.AdamOptimizer(0.001).minimize(cost)
+
+# 학습과 결과 코드 작성, 앞과 큰 차이 없고 모델에 입력값을 전달하기 위해 28x28로 재구성 하는 부분만 좀 달라
+init = tf.global_variables_initializer()
+sess = tf.Session()
+sess.run(init)
+batch_size = 100
+total_batch = int(mnist.train.num_examples / batch_size)
+
+for epoch in range(15):
+    total_cost = 0
+    
+    for i in range(total_batch):
+        batch_xs, batch_ys = mnist.train.next_batch(batch_size)
+        batch_xs = batch_xs.reshape(-1, 28, 28, 1)
+        
+        _,cost_val = sess.run([optimizer, cost],
+                             feed_dict = {X:batch_xs,
+                                         Y:batch_ys,
+                                         keep_prob:0.7})
+        total_cost += cost_val
+    print('Epoch:', '%04d' % (epoch + 1),
+         'Avg. cost =', '{:.3f}'.format(total_cost / total_batch))
+    
+print('최적화 완료!')
+
+is_correct = tf.equal(tf.argmax(model, 1), tf.argmax(Y,1))
+accuracy = tf.reduce_mean(tf.cast(is_correct, tf.float32))
+print('정확도:', sess.run(accuracy,
+                      feed_dict={X:mnist.test.images.reshape(-1, 28, 28, 1),
+                                Y:mnist.test.labels,keep_prob: 1}))
+```
+
+### 고수준 API
+
+layers 모듈을 활용해서 코드를 간단하게 줄일 수 있다.
+
+### 더보기
+
+학습시간 꽤 걸린다, 컴퓨터 자원 필요하다, 좋은 컴퓨터도 있지만 클라우드 컴퓨팅 이용하는 방법도 있다. Cloud ML을 이용해 매우 편하게 학습시킬 수 있다. 복잡한 모델 하고 싶다면 확인 해보라
+
+## Autoencoder
+
+지도학습 : 프로그램에게 원하는 결과를 알려주고 학습하게 하는 방법, X와 Y둘다 있는 상태에서 학습
+
+비지도학습 : 입력값으로부터 데이터의 특징을 찾아내는 학습 방법, 이 방법중 가장 널리 쓰이는게 오토인코더, 비지도 학습은 X만 있는 상태에서 시작
+
+### 오토 인코더 개념
