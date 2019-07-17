@@ -720,3 +720,203 @@ layers 모듈을 활용해서 코드를 간단하게 줄일 수 있다.
 비지도학습 : 입력값으로부터 데이터의 특징을 찾아내는 학습 방법, 이 방법중 가장 널리 쓰이는게 오토인코더, 비지도 학습은 X만 있는 상태에서 시작
 
 ### 오토 인코더 개념
+
+입력값과 출력값을 같게 하는 신경망, 가눙데 계층의 노드 수가 입력값보다 적어, 입력 데이터 압축효과, 노이즈 제거에 효과적, 입력층으로 들어온 데이터를 인코더를 통해 은닉층으로 내보내고, 은닉층의 데이터를 디코더를 통해 출력층으로 내보낸 뒤 만드렁진 출력값을 입력값과 비슷해지도록 만드는 가중치 찾는 것, 변이형, 잡음제거 등 다양한 형태 있다.
+
+### 구현하기
+
+```python
+import tensorflow as tf
+import numpy as np
+import matplotlib.pyplot as plt
+from tensorflow.examples.tutorials.mnist import input_data
+
+mnist = input_data.read_data_sets("./mnist/data/", one_hot=True)
+
+# 파라미터 미리 설정해서 코드 구조화
+learning_rate = 0.01
+traing_epoch = 20
+batch_size = 100
+n_hidden = 256
+n_input = 28*28
+
+# 비지도라 Y없음
+X = tf.placeholder(tf.float32, [None, n_input])
+
+# 인코더 제작, n_hidden 개의 뉴런 가진 은닉층 제작, 가중치, 편향 원하는 설정
+W_encode = tf.Variable(tf.random_normal([n_input, n_hidden]))
+b_encode = tf.Variable(tf.random_normal([n_hidden]))
+# sigmoid 활성 함수 사용, n_input < n_hidden
+encoder = tf.nn.sigmoid(tf.add(tf.matmul(X, W_encode), b_encode))
+
+# 인코더와 같은 구성, 입력 값이 은닉층 크기 출력값이 입력층 크기
+W_decode = tf.Variable(tf.random_normal([n_hidden, n_input]))
+b_decode = tf.Variable(tf.random_normal([n_input]))
+
+decoder = tf.nn.sigmoid(tf.add(tf.matmul(encoder, W_decode), b_decode))
+
+# 가중치 최적화 위한 손실함수 제작, 출력값과 입력갑을 가장 비슷하게 만드는게 목적
+# 압축된 은닉층의 뉴런들로 입력값 특징 알아내기 가능
+# 디코더가 내보낸 결괏값과의 차이를 손신값, 값의 차이로 거리 함수 구하기
+cost = tf.reduce_mean(tf.pow(X - decoder,2))
+
+# RMSPropOptimizer 함수 활용 죄적화 함수 설정
+optimizer = tf. train.RMSPropOptimizer(learning_rate).minimize(cost)
+
+# 학습 코드
+init = tf.global_variables_initializer()
+sess = tf.Session()
+sess.run(init)
+
+total_batch = int(mnist.train.num_examples / batch_size)
+
+for epoch in range(traing_epoch):
+    total_cost = 0
+    
+    for i in range(total_batch):
+        batch_xs, batch_ys = mnist.train.next_batch(batch_size)
+        _, cost_val = sess.run([optimizer, cost], feed_dict = {X:batch_xs})
+        total_cost += cost_val
+        
+    print('Epoch:', '%04d' % (epoch + 1),
+         'Avg. cost =', '{:.4f}'.format(total_cost/total_batch))
+    
+print('최적화 완료!')
+
+# 결과를 정확도 아닌 디코더로 생성해낸 결과를 직관적 방법으로 확인, 10개 테스트 데이터 가벼와 디코더 이용 출력값 제작
+sample_size = 10
+sample = sess.run(decoder, feed_dict={X:mnist.test.images[:sample_size]})
+
+# numpy 사용 MNIST 데이터를 28x28크기 이미지 데이터로 재구성 후 출력
+fig, ax = plt.subplot(2, sample_size, figsize=(sample_size, 2))
+
+for i in range(sample_size):
+    ax[0][i].set_axis_off()
+    ax[1][i].set_axis_off()
+    ax[0][i].imshow(np.reshape(mnist.test,images[i], (28, 28)))
+    ax[1][i].imshow(np.reshape(samples[i], (28, 28)))
+    
+plt.show()
+```
+
+## GAN
+
+2016년 가장 뜨거운 감자, 딥러닝의 미래 GAN!
+
+* GAN: 결과물을 생성하는 모델중 하나, 서로 대립하는 두 신경망 경쟁시키며 결과물 생성 방법 학습, 위조지폐범과 경찰의 싸움 같아 최종적으로 위조지폐범은 진짜와 구분 불가한 위조지폐만든다!
+* 구분자: 이미지를 주고 진짜인지 판단
+* 생성자: 노이즈로 임의 이미지 제작
+
+구분자는 실제 이미지, 생성자 이미지를 받아 진짜 인지 판단하게 하고 생성자는 임의의 이미지를 만들어 구분자에게 계속 제출한다. 생성자는 구분자가 구분할 수 없는 이미지를 만드는 것을 목표로 하고 구분자는 생성자가 만드는 이미지를 전부 가짜라고 구분하는 것을 목표로 한다. -> 경쟁을 통해 결과적으로 생성자는 실제 이미지와 상당히 비슷한 이미지 생성가능
+
+고흐 풍 그림 그리기, 선으로 그려진 만화 자동채색, 모자이크 제거 등 놀라운 결과, 현재는 자연어 문장 생성 등에 관한 연구 중
+
+### 기본 모델 구현
+
+GAN 학습은 loss_D와 loss_G 둘 모두 최대화 시키는 것, 서로 연관 되어 두 손실값이 항상 같이 증가하는 경향을 보이지는 않는다. 경쟁관계
+
+```python
+import tensorflow as tf
+import matplotlib.pyplot as plt
+import numpy as np
+from tensorflow.examples.tutorials.mnist import input_data
+mnist = input_data.read_data_sets('./mnist/data/', one_hot = True)
+
+total_epoch = 100
+batch_size = 100
+learning_rate = 0.0002
+n_hidden = 256
+n_input = 28 * 28
+n_noise = 128
+
+X = tf.placeholder(tf.float32, [None, n_input])
+# 비지도 학습이므로 Y 사용 없음, 구분자에 넣을 이미지가 실제 이미지와 생성 이미지 두개
+# 가짜 이미지는 노이즈에서 생성하므로 노이즈를 입력할 플레이스 홀더 Z추가
+Z = tf.placeholder(tf.float32, [None, n_noise])
+
+# 신경망에 사용할 변수 설정, 가중치와 편향은 은닉층으로 출력하기 위한 변수 들
+G_W1 = tf.Variable(tf.random_normal([n_noise, n_hidden], stddev=0.01))
+G_b1 = tf.Variable(tf.zeros([n_hidden]))
+# 두번째 가중치과 편향은 출력층에 사용할 변수들
+# 출력층에서 쓸 것이기에 실제 이미지 크기와 같아야 한다.
+G_W2 = tf.Variable(tf.random_normal([n_hidden, n_input], stddev=0.01))
+G_b2 = tf.Variable(tf.zeros([n_input]))
+
+# 신경망에 사용할 변수 설정, 은닉층은 생성자와 동일, 구분자는 얼마나 진짜 같나 0~1로
+D_W1 = tf.Variable(tf.random_normal([n_input, n_hidden],stddev=0.01))
+D_b1 = tf.Variable(tf.zeros([n_hidden]))
+D_W2 = tf.Variable(tf.random_normal([n_hidden, 1], stddev=0.01))
+D_b2 = tf.Variable(tf.zeros([1]))
+
+# 생성자 신경망 구성
+def generator(noise_z):
+    hidden = tf.nn.relu(tf.matmul(noise_z, G_W1) + G_b1)
+    output = tf.nn.sigmoid(tf.matmul(hidden, G_W2) + G_b2)
+    return output
+
+# 구분자 신경만 구성
+def discriminator(inputs):
+    hidden = tf.nn.relu(tf.matmul(inputs, D_W1) + D_b1)
+    output = tf.nn.sigmoid(tf.matmul(hidden, D_W2) + D_b2)
+    return output
+
+# 무작위 노이즈 제작 유틸리티 함수
+def get_noise(batch_size, n_noise):
+    return np.random.normal(size=(batch_size, n_noise))
+
+# 노이즈 Z이용해 가짜 이미지 만들 생성자 G
+# G, X 넣어 진짜인지 팝별하게 한다.
+G = generator(Z)
+D_gene = discriminator(G)
+D_real = discriminator(X)
+
+# 손실값, 이번에는 두개 필요
+# 생성자가 만든 이미지가 가짜라고 판단하게 하는 손실값과 진짜라고 판단하게 하는 손실값
+# 진짜 라고 판별하는 D_realdl 1에 가까울수록 성공적, D_gene이 0에 가까울 수록 성공적
+# 코드 간단 경찰학습
+loss_D = tf.reduce_mean(tf.log(D_real) + tf.log(1-D_gene))
+# 위조지폐범 학습
+loss_G = tf.reduce_mean(tf.log(D_gene))
+
+# 학습 제작, loss_D,loss_G 각각 구분자, 생성자 신경망 각각의 변수만 써야 한다.
+# 그래야 다른 것 학습 할때 상대것 안바껴
+D_var_list = [D_W1, D_b1, D_W2, D_b2]
+G_var_list = [G_W1, G_b1, G_W2, G_b2]
+
+# 논문 따르면 GAN은 loss를 최대화 해야 하지만 minimize밖에 없으니 - 붙인다.
+train_D = tf.train.AdamOptimizer(learning_rate).minimize(-loss_D, var_list=D_var_list)
+train_G = tf.train.AdamOptimizer(learning_rate).minimize(-loss_G, var_list=G_var_list)
+
+# 학습 코드 작성, 두개를 학습 해야 하므로 코드 추가
+# 세션 설정
+sess = tf.Session()
+sess.run(tf.global_variables_initializer())
+# 결괏값을 받을 변수 설정, 미니배치로 학습 반복, 구분자는 X값을, 생성자는 노이즈인 Z값 받는다.
+total_batch = int(mnist.train.num_examples / batch_size)
+loss_val_D, loss_val_G = 0, 0
+for epoch in range(total_epoch):
+    for i in range(total_batch):
+        batch_xs, batch_ys = mnist.train.next_batch(batch_size)
+        noise = get_noise(batch_size, n_noise)
+        
+        _, loss_val_D = sess.run([train_D, loss_D], feed_dict = {X:batch_xs, Z:noise})
+        _, loss_val_G = sess.run([train_G, loss_G], feed_dict={Z:noise})
+    print('Epoch:', '%04d' % epoch, 'D loss: {:.4}'.format(loss_val_D), 'G loss: {:.4}'.format(loss_val_G))
+    if epoch == 0 or (epoch + 1) % 10 ==0:
+        sample_size = 10
+        noise = get_noise(sample_size, n_noise)
+        samples = sess.run(G, feed_dict={Z:noise})
+        
+        fig, ax = plt.subplots(1, sample_size, figsize=(sample_size, 1))
+        
+        for i in range(sample_size):
+            ax[i].set_axis_off()
+            ax[i].imshow(np.reshape(samples[i], (28, 28)))
+        
+        plt.savefig('samples/{}.png'.format(str(epoch).zfill(3)),bbox_inches='tight')
+        plt.close(fig)
+        
+print('최적화 완료!')
+```
+
+### 원하는 숫자 생성하기
