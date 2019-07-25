@@ -936,3 +936,79 @@ RNN:순환 신경망, 이미지에 CNN이라면 자연처리는 RNN 순서가 �
 손글씨 이미지를 RNN방식으로 학습하고 예측하는 모델 만들어 보자
 
 연산하는 것을 셀이라고 하며 셀을 중첩하여 심층 신경망 제작, 앞 단계 학습 결과를 다음 단계의 학습에 이용, 학습 데이터를 단계별로 구별해서 넣어야 한다. 위에서 아래로 쓰는경우가 많으니 그렇게 입력
+
+RNN을 직접 구현하려면 매우 복잡한 계산을 거쳐야 한다. 텐서플로우 이용하면 간단, 다양한 방법 제공, 긴간뎨의 데이터를 학습 할때 맨 뒤에서 맨 앞에 정보 잘 기억 못해, 보완하기 위한 다양한 구조 생성, 그중 많이 쓰이는게 LSTM, GRU는 LSTM보다 구조 간단. 
+
+```python
+import tensorflow as tf
+
+from tensorflow.examples.tutorials.mnist import input_data
+mnist = input_data.read_data_sets('./mnist/data/', one_hot=True)
+
+learning_rate = 0.001
+total_epoch = 30
+batch_size = 128
+
+n_input = 28
+n_step = 28
+n_hidden = 128
+n_class = 10
+
+# n_step 차원 추가
+X = tf.placeholder(tf.float32, [None, n_step, n_input])
+Y = tf.placeholder(tf.float32, [None, n_class])
+W = tf.Variable(tf.random_normal([n_hidden, n_class]))
+b = tf.Variable(tf.random_normal([n_class]))
+
+# BasicLSTMCell, GRUCell 등 다양한 방식의 셀 제공, 직접 구현하려면 다름 신경망 보다 복잡한 계산식,
+# 저수준부터 하려면 다른 신경망 보다 복잡한 계산 필요
+cell = tf.nn.rnn_cell.BasicRNNCell(n_hidden)
+
+# 셀, 입력값, 자료형 만으로 간단히 신경망 생성 가능
+outputs, states = tf.nn.dynamic_rnn(cell, X, dtype=tf.float32)
+
+# 최종 출력값을 만들어 보자, 원핫 인코딩이므로 손실함수는 tf.nn.softmax_cross_entropy_with_logits_v2사용
+# RNN 출력 값은 각 단계가 포함된 [batch_size, n_step, n_hidden] 형태로 출력
+# dynamic_rnn 함수 옵션중 time_major를 True로 하면 [n_step, batch_size, n_hidde]형태로 출력
+outputs = tf.transpose(outputs, [1, 0, 2])
+outputs = outputs[-1]
+
+model = tf.matmul(outputs, W) + b
+
+cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits=model,labels=Y))
+optimizer = tf.train.AdamOptimizer(learning_rate).minimize(cost)
+
+# 신경망 학습하고 결과 확인하는 코드 작성 할 것, 앞장 코드와 비슷 입력따라 데이터 형태 바껴
+sess = tf.Session()
+sess.run(tf.global_variables_initializer())
+
+total_batch = int(mnist.train.num_examples / batch_size)
+
+for epoch in range(total_epoch):
+    total_cost = 0
+    
+    for i in range(total_batch):
+        batch_xs, batch_ys = mnist.train.next_batch(batch_size)
+        batch_xs = batch_xs.reshape((batch_size, n_step, n_input))
+        
+        _, cost_val = sess.run([optimizer, cost], feed_dict={X:batch_xs, Y:batch_ys})
+        
+        total_cost += cost_val
+    print('Epoch:', '%04d' % (epoch + 1), 'Avg. cost =', '{:.3f}'.format(total_cost / total_batch))
+    
+print('최적화 완료!')
+
+is_correct = tf.equal(tf.argmax(model,1), tf.argmax(Y, 1))
+accuracy = tf.reduce_mean(tf.cast(is_correct, tf.float32))
+
+test_batch_size = len(mnist.test.images)
+test_xs = mnist.test.images.reshape(test_batch_size, n_step, n_input)
+test_ys = mnist.test.labels
+
+print('정확도:', sess.run(accuracy, feed_dict={X:test_xs, Y:test_ys}))
+```
+
+### 단어 자동 완성
+
+단어 자동 완성 프로그램을 만들어 보자, 영문자 4개 단어 학습시켜 3개 입력시 하나 추천하는 프로그램, dynamic_rnn의 sequence_length 쓰면 가변 길이 단어 학습 가능, 짤은 단어는 가장 긴 단어의 길이 만큼 뒷부분을 0으로 채우고, 해당 단어의 길이를 계산해 squence_length로 넘겨 주면 된다. 일단 고정길이
+
