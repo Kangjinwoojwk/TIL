@@ -1012,3 +1012,104 @@ print('정확도:', sess.run(accuracy, feed_dict={X:test_xs, Y:test_ys}))
 
 단어 자동 완성 프로그램을 만들어 보자, 영문자 4개 단어 학습시켜 3개 입력시 하나 추천하는 프로그램, dynamic_rnn의 sequence_length 쓰면 가변 길이 단어 학습 가능, 짤은 단어는 가장 긴 단어의 길이 만큼 뒷부분을 0으로 채우고, 해당 단어의 길이를 계산해 squence_length로 넘겨 주면 된다. 일단 고정길이
 
+```python
+# 알파벳 순서에서 인덱스를 원-핫 인코딩으로 취한다.
+import tensorflow as tf
+import numpy as np
+
+char_arr = ['a', 'b', 'c', 'd', 'e', 'f', 'g',
+           'h', 'i', 'j', 'k', 'l', 'm', 'n',
+            'o', 'p', 'q', 'r', 's', 't', 'u',
+           'v', 'w', 'x', 'y', 'z']
+num_dic = {n:i for i, n in enumerate(char_arr)}
+dic_len = len(num_dic)
+
+# 학습용 단어
+seq_data = ['word', 'wood', 'deep', 'cold', 'cool', 'load', 'love', 'kiss', 'kind']
+
+# 학습에 사용할 수 있는 형식으로 변환해주는 유틸리티 함수 작성
+# 입력값으로 단어의 세글자 알파벳 인덱스를 구한 배열제작
+# 출력용으로 마지막 글자의 알파벳 인덱스 
+# 입력값 원-핫 인코딩 변환
+# 실측값 인코딩 않고 그대로 사용, 손실 ㅎ마수로 다른 것 사용, 자동 변환
+def make_batch(seq_data):
+    input_batch = []
+    target_batch = []
+    for seq in seq_data:
+        input = [num_dic[n] for n in seq[:-1]]
+        target = num_dic[seq[-1]]
+        input_batch.append(np.eye(dic_len)[input])
+        target_batch.append(target)
+        
+    return input_batch, target_batch
+
+# 신경망 구현
+learning_rate = 0.01
+n_hidden = 128
+total_epoch = 30
+n_step = 3
+n_input = n_class = dic_len
+
+# 첫 3글자만 단계적 학습하므로 n_step은 3
+# 본격적 신경망 모델 구성
+X = tf.placeholder(tf.float32, [None, n_step, n_input])
+Y = tf.placeholder(tf.int32, [None])
+
+# 원-핫 아닌 인덱스 그대로 사용, 값 하나뿐인 1차원 배열 입력
+W = tf.Variable(tf.random_normal([n_hidden, n_class]))
+b = tf.Variable(tf.random_normal([n_class]))
+
+# 두개 RNN 셀 생성, 심층 신경망 제작, DropoutWrapper로 과적합 방지
+cell1 = tf.nn.rnn_cell.BasicLSTMCell(n_hidden)
+cell1 = tf.nn.rnn_cell.DropoutWrapper(cell1, output_keep_prob=0.5)
+cell2 = tf.nn.rnn_cell.BasicLSTMCell(n_hidden)
+
+# 함수 조합하여 심층 순환 신경 망 제작
+multi_cell = tf.nn.rnn_cell.MultiRNNCell([cell1, cell2])
+
+outputs, status = tf.nn.dynamic_rnn(multi_cell, X, dtype = tf.float32)
+
+# 출력층 제작
+outputs = tf.transpose(outputs, [1, 0, 2])
+outputs = outputs[-1]
+model = tf.matmul(outputs, W) + b
+
+# 손실함수와 최적화로 구성 마무리
+cost = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=model,labels=Y))
+optimizer = tf.train.AdamOptimizer(learning_rate).minimize(cost)
+
+# 신경망 학습 코드, make_batch 이용, seq_data에 저장한 입력, 실츨 분리 최적화 실해
+sess = tf.Session()
+sess.run(tf.global_variables_initializer())
+input_batch, target_batch = make_batch(seq_data)
+
+for epoch in range(total_epoch):
+    _, loss = sess.run([optimizer, cost], feed_dict={X:input_batch, Y: target_batch})
+    
+    print('Epoch:', '%04d'%(epoch +1), 'cost = ', '{:.6f}'.format(loss))
+    
+print('최적화 완료!')
+
+# 예측 단어를 정확도와 함께 출력 하도록 만들자
+prediction = tf.cast(tf.argmax(model, 1), tf.int32)
+prediction_check = tf.equal(prediction, Y)
+accuracy = tf.reduce_mean(tf.cast(prediction_check, tf.float32))
+
+# 예측 모델 돌려보자
+input_batch, target_batch = make_batch(seq_data)
+predict, accuracy_val = sess.run([prediction, accuracy], feed_dict={X:input_batch, Y:target_batch})
+
+predict_words = []
+for idx, val in enumerate(seq_data):
+    last_char = char_arr[predict[idx]]
+    predict_words.append(val[:3] + last_char)
+    
+print('\n=== 예측 결과 ===')
+print('입력값:', [w[:3] + ' ' for w in seq_data])
+print('예측값:', predict_words)
+print('정확도:', accuracy_val)
+```
+
+### Sequence to Sequence
+
+* Sequence to Sequence: 구글이 기계번역에 사용하는 신경망 모델, 번역이나 챗봇 등 문장을 입력 받아 다른 문장을 출력하는 프로그램에서 사용, 인코더로 원문 읽기, 디코더로 번역 결과물 받기, 디코더가 출력한 결과물을 번역 결과 물과 비교하며 학습 
