@@ -1112,4 +1112,133 @@ print('정확도:', accuracy_val)
 
 ### Sequence to Sequence
 
-* Sequence to Sequence: 구글이 기계번역에 사용하는 신경망 모델, 번역이나 챗봇 등 문장을 입력 받아 다른 문장을 출력하는 프로그램에서 사용, 인코더로 원문 읽기, 디코더로 번역 결과물 받기, 디코더가 출력한 결과물을 번역 결과 물과 비교하며 학습 
+* Sequence to Sequence: 구글이 기계번역에 사용하는 신경망 모델, 번역이나 챗봇 등 문장을 입력 받아 다른 문장을 출력하는 프로그램에서 사용, 인코더로 원문 읽기, 디코더로 번역 결과물 받기, 디코더가 출력한 결과물을 번역 결과 물과 비교하며 학습
+
+번역프로그램을 만들어 보자, 네 글자 영단어를 두 글자 한글로
+
+* 이 모델에는 특수한 심볼이 몇개 필요, 디코더에 입력이 시작된을 알려주는 심볼, 임력이 끝났음을 알려주는 심볼, 빈데이터 채울 때 쓰는 의미없는 심볼
+
+dynamic_rnn의 옵션인 sequence_lenth를 사용하면 길이가 다른 입력도 한번에 받을 수 있다. 그래도 입력 데이터 길이는 같아야 한다. 짧은건 입력 따라 채워야 한다. 의미없는 값 'P'는 이럴때 사용
+
+```python
+# 데이터 제작, 앞 예제 같이 글자 학습, 원-핫 인코딩
+# 알파벳과 함글 나열 뒤 함글자씩 배열에 넣는다.
+# 넣는 글자는 연관 배열(키/값 쌍)dmfh qusrud
+import tensorflow as tf
+import numpy as np
+
+char_arr = [c for c in 'SEPabcdefghijklmnopqrstuvwxyz단어나무놀이소녀키스사랑']
+num_dic = {n: i for i, n in enumerate(char_arr)}
+dic_len = len(num_dic)
+
+seq_data = [['word', '단어'], ['wood', '나무'], ['game', '놀이'], ['girl', '소녀'], ['kiss', '키스'],['love', '사랑']]
+
+# 입력 단어, 출력단어 한 글자씩 떼서 배열로 만든 후 원-핫 인코딩 유틸리티 함수 제작
+def make_batch(seq_data):
+    input_batch = []
+    output_batch = []
+    target_batch = []
+    
+    for seq in seq_data:
+        # 인코더 셀의 입력값을 위해 입력 단어를 한글자씩 떼어 배열로 만든다.
+        input = [num_dic[n] for n in seq[0]]
+        # 디코더 셀의 입력값을 위해 출력 단어의 글자들을 배열로 만들고, 시작은 나타내는 심볼 'S'를 맨 앞에 붙입니다.
+        output = [num_dic[n] for n in ('S' + seq[1])]
+        # 학습을 위해 비교할 디코더 셀의 출력값을 만들고, 출력의 끝을 알려주는 심볼 'E'를 마지막에 붙입니다.
+        target = [num_dic[n] for n in (seq[1] + 'E')]
+        
+        input_batch.append(np.eye(dic_len)[input])
+        output_batch.append(np.eye(dic_len)[output])
+        target_batch.append(target)
+        
+    return input_batch, output_batch, target_batch
+
+# 학습 수치 정의
+learnging_rate = 0.01
+n_hidden = 128
+total_epoch = 100
+
+n_class = n_input = dic_len
+# 인코더의 입력값, 디코더의 입력값, 출력값에 쓸 플레이스 홀더 구성
+# 입력은 [batch size, time steps, input size] 형식
+# 출력은 [batch size, time steps] 형식
+
+# 신경망 구성 다른 글자수의 것도 할 수 있게 일단 None, 단, 같은 배치때 입력되는 데이터는 글자수, 단계가 모두 같아야 한다.
+enc_input = tf.placeholder(tf.float32, [None, None, n_input])
+dec_input = tf.placeholder(tf.float32, [None, None, n_input])
+targets = tf.placeholder(tf.int64, [None, None])
+
+# RNN 모델을 위한 셀 구성
+with tf.variable_scope('encode'):
+    enc_cell = tf.nn.rnn_cell.BasicRNNCell(n_hidden)
+    enc_cell = tf.nn.rnn_cell.DropoutWrapper(enc_cell, output_keep_prob=0.5)
+    
+    outputs, enc_states = tf.nn.dynamic_rnn(enc_cell, enc_input, dtype=tf.float32)
+    
+# 디코더에 초기상대값아닌 인코더 최종값을 넣어야 한다.
+with tf.variable_scope('decode'):
+    dec_cell = tf.nn.rnn_cell.BasicRNNCell(n_hidden)
+    dec_cell = tf.nn.rnn_cell.DropoutWrapper(dec_cell, output_keep_prob=0.5)
+    
+    outputs, dec_states = tf.nn.dynamic_rnn(dec_cell, dec_input, initial_state = enc_states, dtype = tf.float32)
+# 인코더의 계산한 상태를 디코더로 전파 가능 initial_state = enc_states 옵션 쓰면 간단
+
+# 출력층 제작, 손실 함수와 최적화 함수 구성
+model = tf.layers.dense(outputs, n_class, activation=None)
+
+cost = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(logits=model, labels=targets))
+
+optimizer = tf.train.AdamOptimizer(learnging_rate).minimize(cost)
+
+# 학습을 시키는 코드는 앞과 같아
+sess = tf.Session()
+sess.run(tf.global_variables_initializer())
+
+input_batch, output_batch, target_batch = make_batch(seq_data)
+
+for epoch in range(total_epoch):
+    _, loss = sess.run([optimizer, cost], feed_dict = {enc_input: input_batch, dec_input:output_batch, targets:target_batch})
+    
+    print('Epoch:', '%04d' % (epoch + 1), 'cost =', '{:.6f}'.format(loss))
+    
+print('최적화 완료!')
+
+# 결과를 확인하기 위해 단어를 입력받아 번역 단어를 예측하는 함수 제작
+def translate(word):
+    seq_data = [word, 'P' * len(word)]
+    
+    input_batch, output_batch, target_batch = make_batch([seq_data])
+    # 예측 모델을 돌립니다. 세 번째 차원을 argmax로 취해 가장 확률이 높은 글자를 예측값으로 만듭니다.
+    prediction = tf.argmax(model, 2)
+
+    result = sess.run(prediction, feed_dict={enc_input: input_batch, dec_input: output_batch, targets: target_batch})
+    
+    decoded = [char_arr[i] for i in result[0]]
+    end = decoded.index('E')
+    translated = ''.join(decoded[:end])
+    
+    return translated
+
+print('\n=== 번역 테스트 ===')
+
+print('word ->', translate('word'))
+print('wodr ->', translate('wodr'))
+print('love ->', translate('love'))
+print('loev ->', translate('loev'))
+print('abcd ->', translate('abcd'))
+print('xcvf ->', translate('xcvf'))
+```
+
+### 더보기
+
+Seq2Seq모델로 만들 수 있는 유용한 응용 분야 중 요약
+
+* https://github.com/tensorflow/models/tree/master/textsum (Squence-to-Sequence with Attention Model for Text Summarization)
+
+딥러닝으로 자연어 분석 한다면 Word2Vec라는 Word embeddings 모델은 한 번은 접하게 될 것,
+
+* https://goo.gl/5cBLVM
+
+## Inception
+
+구글의 핵심 이미지 인식 모델
