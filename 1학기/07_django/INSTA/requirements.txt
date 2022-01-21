@@ -20,7 +20,7 @@ fabric==2.4.0
 Faker==1.0.4
 invoke==1.2.0
 ipykernel==5.1.0
-ipython==7.4.0
+ipython==7.16.3
 ipython-genutils==0.2.0
 ipywidgets==7.4.2
 jedi==0.13.3
